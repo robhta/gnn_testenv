@@ -1,0 +1,6 @@
+benchmark.egg-info/
+build/
+benchmark_lite_sql.egg-info/
+benchmark/__pycache__/
+.vscode/
+oldstuff/

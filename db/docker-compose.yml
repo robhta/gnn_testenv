@@ -1,0 +1,23 @@
+# Use root/example as user/password credentials
+# Use root/example as user/password credentials
+version: '3.1'
+
+volumes:
+  data:
+services:
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: darpa
+    volumes:
+      - data:/var/lib/mysql
+      - /Users/robinbuchta/Documents/DARPA/:/output/
+    ports:
+      - "3306:3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

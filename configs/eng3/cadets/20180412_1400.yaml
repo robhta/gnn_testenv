@@ -1,0 +1,134 @@
+date: "20180412"
+start_time: "14:00"
+end_time: "14:38"
+search_terms: 
+  - "shell"
+  - "tmux-1002"
+  - "/tmp/test"
+  - "micro"
+  - "scans"
+  - "25.159.96.207"
+  - "128.55.12.167"
+  - "76.56.184.25"
+  - "155.162.39.48"
+  - "198.115.236.119"
+  - "53.158.101.118"
+  - "98.15.44.232"
+  - "192.113.144.28"
+  - "webserver"
+  - "shellcode_server"
+  - "loaderDrakon"
+  - "libdrakon"
+  - "drakon"
+  - "sendmail"
+  - "vUGefai"
+  - "./deploy/archive/microapt.freebsd.x64_98.15.44.232"
+  - "./deploy/archive/libdrakon.freebsd.x64.so_198.115.236.119"
+  - "/tmp/font"
+  - "font"
+  - "./deploy/archive/drakon.freebsd.x64_53.158.101.118"
+  - "XIM"
+  - "netlog"
+  - "main"
+  - "test"
+  - "/tmp/tmux-1002"
+  - "/tmp/minions"
+  - "/tmp/font"
+  - "/tmo/XIM"
+  - "/var/log/netlog"
+  - "/var/log/sendmail"
+  - "/tmp/main"
+  - "/tmp/test"
+  - "128.55.12.67"
+  - "128.55.12.141"
+  - "128.55.12.110"
+  - "128.55.12.118"
+  - "128.55.12.10"
+  - "128.55.12.1"
+  - "128.55.12.55"
+
+
+#Frist Attack of 3rd Track from Cadets Eng3
+
+# "Event Log:"
+    #  1400 http_post shell F1
+    #  1402 putfile tmux-1002
+    #  1408 rm tmux-1002
+    #  execfile /tmp/test
+    #  1437 scans micro
+    #  1438 quit
+# "Adresses:" 
+    #  * [eth0:920] 25.159.96.207:80 -> 128.55.12.167:8040
+    #  * [eth0:921] 76.56.184.25:80 -> 128.55.12.167:8041
+    #  * [eth0:922] 155.162.39.48:80 -> 128.55.12.167:8042
+    #  * [eth0:923] 198.115.236.119:80 -> 128.55.12.167:8043
+    #  * [eth0:924] 53.158.101.118:80 -> 128.55.12.167:8044
+    #  * [eth0:952] 98.15.44.232:80 -> 128.55.12.167:8062
+    #  * [eth0:953] 192.113.144.28:80 -> 128.55.12.167:8063
+    # webserver shellcode_server
+    # loaderDrakon libdrakon (failed)
+    # drakon micro (failed)
+    # micro 2 (sendmail)
+# "Interactions:"
+#     "Files:"
+          #  F1>rm grain
+          #  F1>rm vUGefai (failed)
+          #  F1>putfile ./deploy/archive/microapt.freebsd.x64_98.15.44.232 tmux-1002
+          #  F1>rm tmux-1002
+          #  F1>putfile ./deploy/archive/microapt.freebsd.x64_98.15.44.232 minions
+          #  F1>putfile ./deploy/archive/libdrakon.freebsd.x64.so_198.115.236.119 font
+          #  F1>elevate /tmp/font
+          #  F1>rm font
+          #  F1>putfile ./deploy/archive/drakon.freebsd.x64_53.158.101.118 XIM
+          #  rm vUGefai (failed)
+          #  F2>rm minion
+          #  F2>rm XIM
+          #  F2>putfile ./deploy/archive/microapt.freebsd.x64_98.15.44.232 netlog
+          #  F2>rm netlog
+          #  F2>putfile ./deploy/archive/microapt.freebsd.x64_192.113.144.28 sendmail
+          #  F2>rm sendmail
+          #  F2>putfile ./deploy/archive/microapt.freebsd.x64_192.113.144.28 main
+          #  F2>rm main
+          #  F2>putfile ./deploy/archive/microapt.freebsd.x64_192.113.144.28 test
+          #  F2>rm test
+#     "Processes:"
+          #  F1>elevate
+          #  F1>elevate
+          #  F1>elevate
+          #  F1>elevate
+          #  F1>elevate
+          #  F1>elevate
+          # /tmp/tmux-1002 (failed) 
+          # /tmp/tmux-1002 (failed) 
+          # /tmp/tmux-1002 (failed)
+          # /tmp/minions (failed) 
+          # /tmp/minions (failed) 
+          # /tmp/font (failed)
+          # /tmp/XIM (failed)
+          #  F1>elevate /tmp/XIM
+          #  F2>elevate /var/log/netlog (failed)
+          #  F2>elevate /var/log/sendmail (failed)
+          #  F2>elevate /var/log/sendmail (failed)
+          #  F2>elevate /tmp/main (failed)
+          #  F2>elevate main (failed)
+          #  F2>elevate /tmp/test (failed)
+          #  F2>elevate /tmp/test (failed)
+          #  F2>elevate /tmp/test (failed)
+          #  F2>execfile /tmp/test
+#     "Connections:"
+          #  exploit: connection on port 80 from 25.159.96.207
+          #  nginx: connection to 76.56.184.25:80
+          #  nginx: connection to 155.162.39.48:80
+          #  XIM: connection to 53.158.101.118:80
+# Interactions:sendmail (Mirco APT)
+          #  sendmail: connection to 192.113.144.28:80
+          #  APT>scan 128.55.12.166 22 6000
+          #  APT>scan 128.55.12.67 22 6000
+          #  APT>scan 128.55.12.141 22 6000
+          #  APT>scan 128.55.12.110 22 6000
+          #  APT>scan 128.55.12.118 22 6000
+          #  APT>scan 128.55.12.10 22 6000
+          #  APT>scan 128.55.12.1 22 6000
+          #  APT>scan 128.55.12.55 22 6000
+# "Graph:"
+# unreadable graph 

