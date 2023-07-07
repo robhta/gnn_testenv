@@ -9,12 +9,12 @@
 import mysql.connector as mariadb
 import json
 import sys
-from benchmark.utils import *
 import csv 
 from typing import List, Dict, Tuple, Any, Optional
 import logging
 from benchmark.constants import * 
 import configparser 
+from benchmark.utils import *
 
 def establish_connection(config: configparser.ConfigParser) -> mariadb.connection:
     """_summary_
@@ -310,6 +310,20 @@ def import_nodes_and_edges(config: configparser.ConfigParser) -> None:
     This is a wrapper function for import_nodes and import_edges.
     Args:
         config (configparser.ConfigParser): _description_"""
+    # Check if the table exists
+    conn = establish_connection(config)
+    cur = conn.cursor()
+    cur.execute("SHOW TABLES")
+    tables = cur.fetchall()
+    node_table = config['SQL']['table_name_nodes']
+    edge_table = config['SQL']['table_name_edges']
+    table_names = [table[0] for table in tables]
+    if node_table in table_names:
+        if edge_table in table_names:
+            logging.info("Table exists. Skipping function.")
+            cur.close()
+            conn.close()
+            return
     import_nodes(config)
     import_edges(config)
 

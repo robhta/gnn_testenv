@@ -13,15 +13,17 @@ from torch_geometric.data import Data, InMemoryDataset
 import numpy as np
 import configparser
 
+
 #############################
 # Create Edge List
-def create_threatrace_edge_list_for_both(config: configparser.ConfigParser, own_timestamp_percent: int = 0):  
+def create_threatrace_edge_list_for_both(config: configparser.ConfigParser, own_timestamp_percent: int = 0) -> None:  
         """_summary_
         create_threatrace_edge_list_for_both train and test
         Args:
             config (configparser.ConfigParser): _description_
             own_timestamp_percent (int, optional): _description_. Defaults to 0.
         """
+        logging.info(f"create_threatrace_edge_list_for_both")
         create_threatrace_node_type(config)
         join_information_for_threatrace(config) 
        # create_threatrace_benign_edge_list(config)
@@ -29,6 +31,13 @@ def create_threatrace_edge_list_for_both(config: configparser.ConfigParser, own_
 
 # possible optimization, filter after recieving the data from the database
 def create_threatrace_edge_list(config: configparser.ConfigParser, test_bool: bool=False):
+        """_summary_
+                create the edge list for the PyG Data Object
+        Args:
+            config (configparser.ConfigParser): _description_
+            test_bool (bool, optional): _description_. Defaults to False.
+        """
+        logging.info(f"create_threatrace_edge_list")
         if test_bool:
                 threatrace_edges = config['threatrace']['test_edges']
         else:
@@ -46,7 +55,13 @@ def create_threatrace_edge_list(config: configparser.ConfigParser, test_bool: bo
         execute_query(config, query2)
         execute_query(config, query3)
 
-def create_threatrace_node_type(config: configparser.ConfigParser):
+def create_threatrace_node_type(config: configparser.ConfigParser) -> None:
+        """_summary_
+                create the node type for the PyG Data Object
+                it is saved as a new column in the nodes table
+        Args:
+            config (configparser.ConfigParser): _description_
+        """
         logging.info(f"create_threatrace_node_type:")
         table_nodes = config['SQL']['table_name_nodes']
         # create two new columns: subtype and whole_type 
@@ -68,7 +83,12 @@ def create_threatrace_node_type(config: configparser.ConfigParser):
         execute_query_and_commit(config, query3)
         logging.info(f"create_threatrace_node_type: done")
 
-def join_information_for_threatrace(config: configparser.ConfigParser):
+def join_information_for_threatrace(config: configparser.ConfigParser) -> None:
+        """_summary_
+                join the information for the Threatrace dataset
+        Args:
+                config (configparser.ConfigParser): _description_
+        """
         #runtime 2m 40s
         table_edges = config['SQL']['table_name_edges']
         table_nodes = config['SQL']['table_name_nodes']
@@ -123,7 +143,13 @@ def join_information_for_threatrace(config: configparser.ConfigParser):
         execute_query(config, query2)
         #execute_query(config, query3)
 
-def drop_test_edges(config: configparser.ConfigParser, own_timestamp_percent:int =0):
+def drop_test_edges(config: configparser.ConfigParser, own_timestamp_percent:int =0) -> None:
+        """_summary_
+                drop the test edges from the edge list
+        Args:
+                config (configparser.ConfigParser): _description_
+                own_timestamp_percent (int, optional): _description_. Defaults to 0.
+        """
         threatrace_edges_benign = "tmp2_benign"
         tmp2 = "tmp2"
         time_column = "event_timestampnanos"
@@ -138,7 +164,7 @@ def drop_test_edges(config: configparser.ConfigParser, own_timestamp_percent:int
                 min_value, max_value = results_query_ts[0]
                 percentage = own_timestamp_percent / 100  # 0,1%
                 range_length = max_value - min_value
-                start_time_unix_ns = min_value + (range_length * percentage)
+                start_time_unix_ns = min_value + (range_length * percentage) # timestamp from above isnt used here, its a new one (just same name for the variable)
         # time_range_condition = f"{time_column} BETWEEN '{start_time_unix_ns}' AND '{end_time_unix_ns}'"
         
         # query = f"""CREATE OR REPLACE TABLE {threatrace_edges_benign} AS
@@ -153,7 +179,14 @@ def drop_test_edges(config: configparser.ConfigParser, own_timestamp_percent:int
 
 
 def rearrange_nodes(config: configparser.ConfigParser, test_bool:bool=False):
-        print("rearrange_nodes")
+        """_summary_
+                rearrange the nodes in the nodes table
+                it is for test and train, based on the bool
+        Args:
+                config (configparser.ConfigParser): _description_
+                test_bool (bool, optional): _description_. Defaults to False.
+        """
+        logging.info("rearrange_nodes")
         if test_bool:
                 edges = config['threatrace']['test_edges']
                 nodes = config['threatrace']['test_nodes']
@@ -200,9 +233,16 @@ def rearrange_nodes(config: configparser.ConfigParser, test_bool:bool=False):
         execute_query(config, query3)
         execute_query(config, query4)
         execute_query(config, query5)
-        #execute_query(config, query6)
+        execute_query(config, query6)
 
-def add_node_label_mapping(config: configparser.ConfigParser, test_bool: bool=False):
+def add_node_label_mapping(config: configparser.ConfigParser, test_bool: bool=False) -> None:
+        """_summary_
+                add the node label mapping to the nodes table
+                it is for test and train, based on the bool     
+        Args:
+                config (configparser.ConfigParser): _description_
+                test_bool (bool, optional): _description_. Defaults to False.
+        """     
         if test_bool:
                 nodes = config['threatrace']['test_nodes']
         else:
@@ -302,15 +342,14 @@ def create_x(config: configparser.ConfigParser, test_bool: bool=False) -> torch.
         values = [row[0] for row in results_query_x]
         # Convert the values into a numpy array
         results_query_unique_event_types = execute_query(config, query_unique_event_types)
-        print(f"results_query_unique_event_types: {results_query_unique_event_types}")
-        print(f"Lenght of results_query_unique_event_types: {len(results_query_unique_event_types)}")
+        # logging.info(f"results_query_unique_event_types: {results_query_unique_event_types}")
+        # logging.info(f"Lenght of results_query_unique_event_types: {len(results_query_unique_event_types)}")
         event_types = [x[0] for x in results_query_unique_event_types]
         event_types_whole = [x + "_out" for x in event_types] + [x + "_in" for x in event_types]
-        print(len(event_types_whole))
+        # logging.info(len(event_types_whole))
         df = pd.DataFrame(values, columns= ['id'], )
         for event_type in event_types_whole:
                  df[event_type] = 0
-        print(df.shape)
         ##
         results_query_node_feature_out = execute_query(config, query_node_feature_out)
         values = [row for row in results_query_node_feature_out]
@@ -338,9 +377,8 @@ def create_x(config: configparser.ConfigParser, test_bool: bool=False) -> torch.
                 event_type = event_type + "_in"
                 df[event_type] = df['id'].map(lambda x: info_dict.get(x, {}).get(event_type_orig, 0))
         df = df.drop(columns=['id'])
-        print(f"df.shape: {df.shape}")
-        print(f"df.columns: {df.columns}")
-        print(df.columns)
+        # logging.info(f"df.shape: {df.shape}")
+        # logging.info(f"df.columns: {df.columns}")
        #print(df[1].unique())
         # Convert DataFrame values to a NumPy array
         # Convert DataFrame values to a NumPy array
@@ -375,9 +413,9 @@ def create_y(config: configparser.ConfigParser, test_bool: bool=False) -> torch.
         unique_values, counts = np.unique(numpy_array, return_counts=True)
         # Print the unique values and their counts
         for value, count in zip(unique_values, counts):
-                print("Value:", value, "Count:", count)
+                logging.info(f"Value: {value}, Count:, {count}")
         # Print the length of the array
-        print("Length:", len(numpy_array))
+        #logging.info("Length:", len(numpy_array))
 
 
 
@@ -410,7 +448,7 @@ def create_edge_index(config: configparser.ConfigParser, test_bool:bool=False) -
         numpy_array = np.array(values)
 
         # Print the length of the array
-        print("Length:", len(numpy_array))
+        #logging.info("Length:", len(numpy_array))
         # Get the unique values and their counts
         #unique_values, counts = np.unique(numpy_array, return_counts=True)
         # Print the unique values and their counts
@@ -430,7 +468,7 @@ def create_edge_index(config: configparser.ConfigParser, test_bool:bool=False) -
         numpy_array = np.array(values)
 
         # Print the length of the array
-        print("Length:", len(numpy_array))
+        logging.info(f"Length:, {len(numpy_array)}")
         # Get the unique values and their counts
         #unique_values, counts = np.unique(numpy_array, return_counts=True)
         # Print the unique values and their counts

@@ -469,6 +469,10 @@ def process_darpa_data(config: configparser.ConfigParser):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         logging.info(f'Created output folder {output_dir}')
+    if os.path.exists(output_dir + "updated_edges.csv"):
+        if os.path.exists(output_dir + "updated_nodes.csv"):
+            logging.info("Files exists. Skipping function.")
+            return
     # unzip tar.gz file
     unzip_tar_gz(input_file, unzipped_dir)
     logging.info(f'Unzipped tar.gz file to {unzipped_dir}')

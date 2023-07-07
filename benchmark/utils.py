@@ -12,9 +12,61 @@ from itertools import islice
 import logging
 import datetime
 import sys
-from benchmark.db_import import establish_connection
 from typing import List, Tuple, Dict, Union, Optional, Any
 import configparser
+
+
+
+# def establish_connection(config: configparser.ConfigParser) -> mariadb.connection:
+#     """_summary_
+#         Establishes a connection to a MariaDB database.
+#         Values are read from the config file.
+#     Args:
+#         config (configparser.ConfigParser): _description_
+
+#     Returns:
+#         mariadb.connection: _description_
+#     """
+#     # Connect to MariaDB Platform
+#     logging.info("Establishing connection")
+#     user = config['SQL']['user']
+#     password = config['SQL']['password']
+#     host = config['SQL']['host']
+#     port = config['SQL']['port']
+#     database = config['SQL']['database']
+#     try:
+#         conn = mariadb.connect(
+#             user=user,
+#             password=password,
+#             host=host,
+#             port=port,
+#             database=database
+#         )
+#     except mariadb.Error as e:
+#         logging.error(f"Error connecting to MariaDB Platform: {e}")
+#         sys.exit(1)
+#     logging.info("Connection established")
+#     return conn
+
+def print_data_stats(data: Any) -> None:
+    """_summary_
+        This function prints some statistics about the graph.
+    Args:
+        data (Any): pyg.data object
+    """
+    print()
+    print(data)
+    print('===========================================================================================================')
+
+    # Gather some statistics about the graph.
+    print(f'Number of nodes: {data.num_nodes}')
+    print(f'Number of edges: {data.num_edges}')
+    print(f'Average node degree: {data.num_edges / data.num_nodes:.2f}')
+    print(f'Number of training nodes: {data.train_mask.sum()}')
+    print(f'Training node label rate: {int(data.train_mask.sum()) / data.num_nodes:.2f}')
+    print(f'Has isolated nodes: {data.has_isolated_nodes()}')
+    print(f'Has self-loops: {data.has_self_loops()}')
+    print(f'Is undirected: {data.is_undirected()}')
 
 def find_sql_table_type(csv_file: str, n: int=None, threshold_factor: int = 0) -> dict:
     """_summary_
@@ -229,23 +281,9 @@ def parse_darpa_gt_to_unix_ns(date: str, time: str, buffer: int = 120, plus: boo
     logging.info(f'Parsed DARPA GT date: {date} and time: {time} to UNIX NS: {ts}')
     return int(ts)
 
-# is moved to db_import.py
-# def establish_connection(config:configparser.ConfigParser) -> mariadb.connection:
-#     # Connect to MariaDB Platform
-#     try:
-#         conn = mariadb.connect(
-#             user="root",
-#             password="example",
-#             host="localhost",
-#             port=3306,
-#             database="darpa"
-#         )
-#     except mariadb.Error as e:
-#         print(f"Error connecting to MariaDB Platform: {e}")
-#         sys.exit(1)
-#     return conn
 
 def execute_query(config: configparser.ConfigParser, query: str) -> Any:
+    from benchmark.db_import import establish_connection
     """_summary_
         This function executes a query on the database.
         It returns the results of the query.
@@ -257,7 +295,7 @@ def execute_query(config: configparser.ConfigParser, query: str) -> Any:
     """
     # Establish a connection to the MySQL server
     connection = establish_connection(config)
-    print(query)
+    #logging.info(query)
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
 
@@ -269,7 +307,7 @@ def execute_query(config: configparser.ConfigParser, query: str) -> Any:
         return results
 
     except Exception as error:
-        print(f"Error executing query: {error}")
+        logging.error(f"Error executing query: {error}")
 
     finally:
         # Close the cursor and connection
@@ -277,6 +315,7 @@ def execute_query(config: configparser.ConfigParser, query: str) -> Any:
         connection.close()
 
 def execute_query_and_commit(config: configparser.ConfigParser, query:str) -> Any:
+    from benchmark.db_import import establish_connection
     """_summary_
         This function executes a query on the database and make a commit.
         It returns the results of the query.
@@ -290,7 +329,7 @@ def execute_query_and_commit(config: configparser.ConfigParser, query:str) -> An
     """
     # Establish a connection to the MySQL server
     connection = establish_connection(config)
-    print(query)
+    #logging.info(query)
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
 
@@ -304,7 +343,7 @@ def execute_query_and_commit(config: configparser.ConfigParser, query:str) -> An
         return results
 
     except Exception as error:
-        print(f"Error executing query: {error}")
+        logging.error(f"Error executing query: {error}")
 
     finally:
         # Close the cursor and connection#
@@ -314,6 +353,7 @@ def execute_query_and_commit(config: configparser.ConfigParser, query:str) -> An
 
 
 def executemany_query_and_commit(config: configparser.ConfigParser, query: str, data: list) -> Any:
+    from benchmark.db_import import establish_connection
     """_summary_
         This function executes a query on the database and make a commit.
         The Query is executed with multiple values. 
@@ -330,7 +370,7 @@ def executemany_query_and_commit(config: configparser.ConfigParser, query: str, 
     """
     # Establish a connection to the MySQL server
     connection = establish_connection(config)
-    print(query)
+    #logging.info(query)
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
 
@@ -344,7 +384,7 @@ def executemany_query_and_commit(config: configparser.ConfigParser, query: str, 
         return results
 
     except Exception as error:
-        print(f"Error executing query: {error}")
+        logging.error(f"Error executing query: {error}")
 
     finally:
         # Close the cursor and connection#

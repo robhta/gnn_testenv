@@ -4,3 +4,8 @@ benchmark_lite_sql.egg-info/
 benchmark/__pycache__/
 .vscode/
 oldstuff/
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride

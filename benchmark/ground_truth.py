@@ -1,7 +1,6 @@
 
 from typing import Dict, List, Tuple, Any
 import logging
-from benchmark.db_import import *
 from benchmark.utils import *
 from benchmark.ground_truth import *
 from benchmark.construct_threatrace_graph import *
@@ -9,6 +8,8 @@ import yaml
 import os
 import pandas as pd
 import configparser
+#from benchmark.db_import import *
+
 
 def read_gt_yaml(config: configparser.ConfigParser) -> Dict:
     """_summary_
@@ -237,7 +238,7 @@ def get_atk_nodes(config: configparser.ConfigParser) -> set:
     node_set = set()
     file_path = config['Directories']['output'] + "atk_nodes.txt"
     if os.path.exists(file_path):
-        print("File exists.")
+        logging.info("File exists.")
         with open(file_path, 'r') as file:
             for line in file:
                 node_set.add(line.strip())
@@ -263,11 +264,18 @@ def get_atk_nodes_with_multiple_gts(config: configparser.ConfigParser, ground_tr
     """
     logging.info(f"get_atk_nodes_with_multiple_gts")
     whole_node_set = set()
-    for gt in ground_truths:
-        yaml_data = read_gt_yaml_with_filepath(gt)
-        node_set = get_atk_nodes_from_yaml(config, yaml_data)
-        logging.info(len(node_set))
-        whole_node_set.update(node_set)
+    file_path = config['Directories']['output'] + "atk_nodes.txt"
+    if os.path.exists(file_path):
+        logging.info("File exists.")
+        with open(file_path, 'r') as file:
+            for line in file:
+                whole_node_set.add(line.strip())
+    else:
+        for gt in ground_truths:
+            yaml_data = read_gt_yaml_with_filepath(gt)
+            node_set = get_atk_nodes_from_yaml(config, yaml_data)
+            logging.info(len(node_set))
+            whole_node_set.update(node_set)
     return whole_node_set
 
 def get_gt_information(config: configparser.ConfigParser, gt_with_numbers: List[int]) -> pd.DataFrame:
@@ -289,7 +297,8 @@ def get_gt_information(config: configparser.ConfigParser, gt_with_numbers: List[
     df = pd.DataFrame(results_query, columns=[x[0] for x in results_query_columns])
     return df
 
-def get_atk_nodes_for_evaluation(config: configparser.ConfigParser) -> List[int]:
+def get_atk_nodes_for_evaluation(config: configparser.ConfigParser, multi: bool=False,  gts: List[str]=None) -> List[int]:
+    from benchmark.construct_threatrace_graph import find_mapping_value_for_gt_uuid
     """_summary_
         Gets the atk nodes for evaluation.
         1. Gets the atk nodes from the config file.
@@ -297,12 +306,16 @@ def get_atk_nodes_for_evaluation(config: configparser.ConfigParser) -> List[int]
         3. Decrements the node ids by 1 to get the node ids in the graph.
     Args:
         config (configparser.ConfigParser): _description_
-    
+        multi (bool, optional): _description_. Defaults to False.
+        gts (List[str], optional): _description_. Defaults to None.
     Returns:
         List[int]: _description_
     """
     logging.info(f"get_atk_nodes_for_evaluation:")
-    atk_nodes = get_atk_nodes(config)
+    if multi:
+        atk_nodes = get_atk_nodes_with_multiple_gts(config, gts)
+    else:
+        atk_nodes = get_atk_nodes(config)
     logging.info(f"atk_nodes: {len(atk_nodes)}")
     mapped_atk_nodes, translation = find_mapping_value_for_gt_uuid(config, atk_nodes)
     logging.info(f"mapped_atk_nodes: {len(mapped_atk_nodes)}")

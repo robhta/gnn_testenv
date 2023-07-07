@@ -88,6 +88,9 @@ class ThreaTracePipeline():
         self.train_loader = self.create_neighborloader(self.train_data , shuffle=self.shuffle, num_neighbor=self.num_neighbor, hop=self.hop, b_size=self.b_train_size)
         self.test_loader = self.create_neighborloader(self.test_data, shuffle=self.shuffle, num_neighbor=self.num_neighbor, hop=self.hop, b_size=self.b_test_size)
         self.test_data_undirected_edge_index = to_undirected(self.test_data.edge_index, num_nodes=self.test_data.x.shape[0])
+        #create models folder if not exists
+        if not os.path.exists(self.models_dir_path):
+            os.makedirs(self.models_dir_path)
         seed_everything(1234)
 
     def delete_old_models(self: Self):
@@ -115,7 +118,9 @@ class ThreaTracePipeline():
         Returns:
             SAGENet: The created SAGENet Model
         """
-        device = torch.device('cpu')
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        #device = torch.device('cpu')
         #train_net = SAGENet
         train_net = SAGENet 
         train_feature_num = data.x.shape[1]
@@ -648,355 +653,355 @@ class ThreaTracePipeline():
 
 
 
-############################################################################################################
-#### ThreaTrace Original Code adapted for new Version of PyTorch Geometric
-############################################################################################################
-#### Orig Data Preprocessing
-### cadets_train.txt and cadets_test.txt are the original data files
-### they are created with the script "parse_darpatc.py"
-training_data_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/graphchi-cpp-master/graph_data/darpatc/cadets_train.txt"
-test_data_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/graphchi-cpp-master/graph_data/darpatc/cadets_test.txt"
+# ############################################################################################################
+# #### ThreaTrace Original Code adapted for new Version of PyTorch Geometric
+# ############################################################################################################
+# #### Orig Data Preprocessing
+# ### cadets_train.txt and cadets_test.txt are the original data files
+# ### they are created with the script "parse_darpatc.py"
+# training_data_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/graphchi-cpp-master/graph_data/darpatc/cadets_train.txt"
+# test_data_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/graphchi-cpp-master/graph_data/darpatc/cadets_test.txt"
 
-class ThreaTraceCadets(InMemoryDataset):
-    def __init__(self, df):
-        super().__init__('.')
-        node_cnt = 0
-        nodeType_cnt = 0
-        edgeType_cnt = 0
-        provenance = []
-        nodeType_map = {}
-        edgeType_map = {}
-        edge_s = []
-        edge_e = []
-        data_thre = 1000000
-        #cnt = 0
-        for out_loop in range(1):
-            f = open(training_data_path, 'r')
-            nodeId_map = {}
-            for line in f:
-                #cnt += 1
-                #if cnt == 1: continue #psacal 
-                temp = line.strip('\n').split('\t')
-                #temp = line.strip('\n').split(',')
-                if not (temp[0] in nodeId_map.keys()):
-                    nodeId_map[temp[0]] = node_cnt
-                    node_cnt += 1
-                temp[0] = nodeId_map[temp[0]]	
-                if not (temp[2] in nodeId_map.keys()):
-                    nodeId_map[temp[2]] = node_cnt
-                    node_cnt += 1
-                temp[2] = nodeId_map[temp[2]]
-                if not (temp[1] in nodeType_map.keys()):
-                    nodeType_map[temp[1]] = nodeType_cnt
-                    nodeType_cnt += 1
-                temp[1] = nodeType_map[temp[1]]
-                if not (temp[3] in nodeType_map.keys()):
-                    nodeType_map[temp[3]] = nodeType_cnt
-                    nodeType_cnt += 1
-                temp[3] = nodeType_map[temp[3]]
-                if not (temp[4] in edgeType_map.keys()):
-                    edgeType_map[temp[4]] = edgeType_cnt
-                    edgeType_cnt += 1
-                temp[4] = edgeType_map[temp[4]]
-                edge_s.append(temp[0])
-                edge_e.append(temp[2])
-                provenance.append(temp)
-        f_train_feature = open(feature_path, 'w')
-        for i in edgeType_map.keys():
-            f_train_feature.write(str(i)+'\t'+str(edgeType_map[i])+'\n')
-        f_train_feature.close()
-        f_train_label = open(label_path, 'w')
-        for i in nodeType_map.keys():
-            f_train_label.write(str(i)+'\t'+str(nodeType_map[i])+'\n')
-        f_train_label.close()
-        feature_num = edgeType_cnt
-        label_num = nodeType_cnt
-        x_list = []
-        y_list = []
-        train_mask = []
-        test_mask = []
-        for i in range(node_cnt):
-            temp_list = []
-            for j in range(feature_num*2):
-                temp_list.append(0)
-            x_list.append(temp_list)
-            y_list.append(0)
-            train_mask.append(True)
-            test_mask.append(True)
-        for temp in provenance:
-            srcId = temp[0]
-            srcType = temp[1]
-            dstId = temp[2]
-            dstType = temp[3]
-            edge = temp[4]
-            x_list[srcId][edge] += 1
-            #x_list[srcId][edge] = 1 # modify feature on boolean instead of count
-            y_list[srcId] = srcType
-            x_list[dstId][edge+feature_num] += 1
-            #x_list[dstId][edge+feature_num] = 1 # modify feature on boolean instead of count
-            y_list[dstId] = dstType
-        x = torch.tensor(x_list, dtype=torch.float)	
-        y = torch.tensor(y_list, dtype=torch.long)
-        train_mask = torch.tensor(train_mask, dtype=torch.bool)
-        test_mask = train_mask
-        edge_index = torch.tensor([edge_s, edge_e], dtype=torch.long)
-        data = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask, test_mask=test_mask)
-        self.data, self.slices = self.collate([data])
-        @property
-        def processed_file_names(self):
-            return './cadets_data.pt'
+# class ThreaTraceCadets(InMemoryDataset):
+#     def __init__(self, df):
+#         super().__init__('.')
+#         node_cnt = 0
+#         nodeType_cnt = 0
+#         edgeType_cnt = 0
+#         provenance = []
+#         nodeType_map = {}
+#         edgeType_map = {}
+#         edge_s = []
+#         edge_e = []
+#         data_thre = 1000000
+#         #cnt = 0
+#         for out_loop in range(1):
+#             f = open(training_data_path, 'r')
+#             nodeId_map = {}
+#             for line in f:
+#                 #cnt += 1
+#                 #if cnt == 1: continue #psacal 
+#                 temp = line.strip('\n').split('\t')
+#                 #temp = line.strip('\n').split(',')
+#                 if not (temp[0] in nodeId_map.keys()):
+#                     nodeId_map[temp[0]] = node_cnt
+#                     node_cnt += 1
+#                 temp[0] = nodeId_map[temp[0]]	
+#                 if not (temp[2] in nodeId_map.keys()):
+#                     nodeId_map[temp[2]] = node_cnt
+#                     node_cnt += 1
+#                 temp[2] = nodeId_map[temp[2]]
+#                 if not (temp[1] in nodeType_map.keys()):
+#                     nodeType_map[temp[1]] = nodeType_cnt
+#                     nodeType_cnt += 1
+#                 temp[1] = nodeType_map[temp[1]]
+#                 if not (temp[3] in nodeType_map.keys()):
+#                     nodeType_map[temp[3]] = nodeType_cnt
+#                     nodeType_cnt += 1
+#                 temp[3] = nodeType_map[temp[3]]
+#                 if not (temp[4] in edgeType_map.keys()):
+#                     edgeType_map[temp[4]] = edgeType_cnt
+#                     edgeType_cnt += 1
+#                 temp[4] = edgeType_map[temp[4]]
+#                 edge_s.append(temp[0])
+#                 edge_e.append(temp[2])
+#                 provenance.append(temp)
+#         f_train_feature = open(feature_path, 'w')
+#         for i in edgeType_map.keys():
+#             f_train_feature.write(str(i)+'\t'+str(edgeType_map[i])+'\n')
+#         f_train_feature.close()
+#         f_train_label = open(label_path, 'w')
+#         for i in nodeType_map.keys():
+#             f_train_label.write(str(i)+'\t'+str(nodeType_map[i])+'\n')
+#         f_train_label.close()
+#         feature_num = edgeType_cnt
+#         label_num = nodeType_cnt
+#         x_list = []
+#         y_list = []
+#         train_mask = []
+#         test_mask = []
+#         for i in range(node_cnt):
+#             temp_list = []
+#             for j in range(feature_num*2):
+#                 temp_list.append(0)
+#             x_list.append(temp_list)
+#             y_list.append(0)
+#             train_mask.append(True)
+#             test_mask.append(True)
+#         for temp in provenance:
+#             srcId = temp[0]
+#             srcType = temp[1]
+#             dstId = temp[2]
+#             dstType = temp[3]
+#             edge = temp[4]
+#             x_list[srcId][edge] += 1
+#             #x_list[srcId][edge] = 1 # modify feature on boolean instead of count
+#             y_list[srcId] = srcType
+#             x_list[dstId][edge+feature_num] += 1
+#             #x_list[dstId][edge+feature_num] = 1 # modify feature on boolean instead of count
+#             y_list[dstId] = dstType
+#         x = torch.tensor(x_list, dtype=torch.float)	
+#         y = torch.tensor(y_list, dtype=torch.long)
+#         train_mask = torch.tensor(train_mask, dtype=torch.bool)
+#         test_mask = train_mask
+#         edge_index = torch.tensor([edge_s, edge_e], dtype=torch.long)
+#         data = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask, test_mask=test_mask)
+#         self.data, self.slices = self.collate([data])
+#         @property
+#         def processed_file_names(self):
+#             return './cadets_data.pt'
 
-def create_tt_orig_data_train():
-    train_dataset = ThreaTraceCadets(training_data_path)
-    train_data = train_dataset[0]
-    train_data.n_id = torch.arange(train_data.num_nodes) # Assign each node its global node index
-    return train_data
+# def create_tt_orig_data_train():
+#     train_dataset = ThreaTraceCadets(training_data_path)
+#     train_data = train_dataset[0]
+#     train_data.n_id = torch.arange(train_data.num_nodes) # Assign each node its global node index
+#     return train_data
 
 
-class ThreaTraceCadetsTest(InMemoryDataset):
-	def __init__(self, data_list):
-		super(ThreaTraceCadetsTest, self).__init__('/tmp/TestDataset')
-		self.data, self.slices = self.collate(data_list)
+# class ThreaTraceCadetsTest(InMemoryDataset):
+# 	def __init__(self, data_list):
+# 		super(ThreaTraceCadetsTest, self).__init__('/tmp/TestDataset')
+# 		self.data, self.slices = self.collate(data_list)
 
-	def _download(self):
-		pass
-	def _process(self):
-		pass
+# 	def _download(self):
+# 		pass
+# 	def _process(self):
+# 		pass
 
-models_dir_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/models/"
-feature_path = models_dir_path+ "feature.txt"
-label_path = models_dir_path + "/label.txt"
-ground_truth_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/groundtruth_nodeId_modified.txt" #without Files
-id_uuid_map_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/id_to_uuid.txt"
-ground_truth_uuid_list = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/cadets.txt"
-alarm_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/alarm.txt"
-def MyDataset(path):
-		feature_num = 0
-		label_num = 0
-		f_feature = open(feature_path, 'r')
-		feature_map = {}
-		for i in f_feature:
-			temp = i.strip('\n').split('\t')
-			feature_map[temp[0]] = int(temp[1])
-			feature_num += 1
-		f_feature.close()
+# models_dir_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/models/"
+# feature_path = models_dir_path+ "feature.txt"
+# label_path = models_dir_path + "/label.txt"
+# ground_truth_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/groundtruth_nodeId_modified.txt" #without Files
+# id_uuid_map_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/id_to_uuid.txt"
+# ground_truth_uuid_list = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/cadets.txt"
+# alarm_path = "/Users/robinbuchta/Documents/GitHub/threaTrace/groundtruth/alarm.txt"
+# def MyDataset(path):
+# 		feature_num = 0
+# 		label_num = 0
+# 		f_feature = open(feature_path, 'r')
+# 		feature_map = {}
+# 		for i in f_feature:
+# 			temp = i.strip('\n').split('\t')
+# 			feature_map[temp[0]] = int(temp[1])
+# 			feature_num += 1
+# 		f_feature.close()
 
-		f_label = open(label_path, 'r')
-		label_map = {} 
-		for i in f_label:
-			temp = i.strip('\n').split('\t')
-			label_map[temp[0]] = int(temp[1])
-			label_num += 1
-		f_label.close()
+# 		f_label = open(label_path, 'r')
+# 		label_map = {} 
+# 		for i in f_label:
+# 			temp = i.strip('\n').split('\t')
+# 			label_map[temp[0]] = int(temp[1])
+# 			label_num += 1
+# 		f_label.close()
 
-		#groundtruth_uuid.txt
-		f_gt = open(ground_truth_uuid_list, 'r')
-		ground_truth = {}
-		for line in f_gt:
-			ground_truth[line.strip('\n')] = 1
-		f_gt.close()
-		node_cnt = 0
-		nodeType_cnt = 0
-		edgeType_cnt = 0
-		provenance = []
-		nodeType_map = {}
-		edgeType_map = {}
-		edge_s = []
-		edge_e = []
-		adj = {}
-		adj2 = {}
-		data_thre = 1000000
-		fw = open(ground_truth_path, 'w+')
-		fw2 = open(id_uuid_map_path, 'w+')
-		nodeId_map = {}
-		cnt = 0
-		for i in range(1):
-			now_path = path
-			#show(now_path)
-			f = open(now_path, 'r')
-			for line in f:
-				cnt += 1
-				#if cnt == 1: continue # für pascals datensatz
-				#print(line)
-				if cnt % 1000000 == 0: nothing = 1  #show(str(cnt))
-				temp = line.strip('\n').split('\t')
-				#temp = line.strip('\n').split(',')
-				if not (temp[1] in label_map.keys()): continue
-				if not (temp[3] in label_map.keys()): continue
-				if not (temp[4] in feature_map.keys()): continue
+# 		#groundtruth_uuid.txt
+# 		f_gt = open(ground_truth_uuid_list, 'r')
+# 		ground_truth = {}
+# 		for line in f_gt:
+# 			ground_truth[line.strip('\n')] = 1
+# 		f_gt.close()
+# 		node_cnt = 0
+# 		nodeType_cnt = 0
+# 		edgeType_cnt = 0
+# 		provenance = []
+# 		nodeType_map = {}
+# 		edgeType_map = {}
+# 		edge_s = []
+# 		edge_e = []
+# 		adj = {}
+# 		adj2 = {}
+# 		data_thre = 1000000
+# 		fw = open(ground_truth_path, 'w+')
+# 		fw2 = open(id_uuid_map_path, 'w+')
+# 		nodeId_map = {}
+# 		cnt = 0
+# 		for i in range(1):
+# 			now_path = path
+# 			#show(now_path)
+# 			f = open(now_path, 'r')
+# 			for line in f:
+# 				cnt += 1
+# 				#if cnt == 1: continue # für pascals datensatz
+# 				#print(line)
+# 				if cnt % 1000000 == 0: nothing = 1  #show(str(cnt))
+# 				temp = line.strip('\n').split('\t')
+# 				#temp = line.strip('\n').split(',')
+# 				if not (temp[1] in label_map.keys()): continue
+# 				if not (temp[3] in label_map.keys()): continue
+# 				if not (temp[4] in feature_map.keys()): continue
 
-				if not (temp[0] in nodeId_map.keys()):
-					nodeId_map[temp[0]] = node_cnt
-					fw2.write(str(node_cnt) + ' ' + temp[0] + '\n')
+# 				if not (temp[0] in nodeId_map.keys()):
+# 					nodeId_map[temp[0]] = node_cnt
+# 					fw2.write(str(node_cnt) + ' ' + temp[0] + '\n')
 
-					if temp[0] in ground_truth.keys():
-						fw.write(str(nodeId_map[temp[0]])+' '+temp[1]+' '+temp[0]+'\n')
-					node_cnt += 1
+# 					if temp[0] in ground_truth.keys():
+# 						fw.write(str(nodeId_map[temp[0]])+' '+temp[1]+' '+temp[0]+'\n')
+# 					node_cnt += 1
 
-				temp[0] = nodeId_map[temp[0]]	
+# 				temp[0] = nodeId_map[temp[0]]	
 
-				if not (temp[2] in nodeId_map.keys()):
-					nodeId_map[temp[2]] = node_cnt
-					fw2.write(str(node_cnt) + ' ' + temp[2] + '\n')
+# 				if not (temp[2] in nodeId_map.keys()):
+# 					nodeId_map[temp[2]] = node_cnt
+# 					fw2.write(str(node_cnt) + ' ' + temp[2] + '\n')
 
-					if temp[2] in ground_truth.keys():
-						fw.write(str(nodeId_map[temp[2]])+' '+temp[3]+' '+temp[2]+'\n')
-					node_cnt += 1
-				temp[2] = nodeId_map[temp[2]]		
-				temp[1] = label_map[temp[1]]
-				temp[3] = label_map[temp[3]]
-				temp[4] = feature_map[temp[4]]
-				edge_s.append(temp[0])
-				edge_e.append(temp[2])
-				if temp[2] in adj.keys():
-					adj[temp[2]].append(temp[0])
-				else:
-					adj[temp[2]] = [temp[0]]
-				if temp[0] in adj2.keys():
-					adj2[temp[0]].append(temp[2])
-				else:
-					adj2[temp[0]] = [temp[2]]
-				provenance.append(temp)
-			f.close()
-		fw.close()
-		fw2.close()
-		x_list = []
-		y_list = []
-		train_mask = []
-		test_mask = []
-		for i in range(node_cnt):
-			temp_list = []
-			for j in range(feature_num*2):
-				temp_list.append(0)
-			x_list.append(temp_list)
-			y_list.append(0)
-			train_mask.append(True)
-			test_mask.append(True)
+# 					if temp[2] in ground_truth.keys():
+# 						fw.write(str(nodeId_map[temp[2]])+' '+temp[3]+' '+temp[2]+'\n')
+# 					node_cnt += 1
+# 				temp[2] = nodeId_map[temp[2]]		
+# 				temp[1] = label_map[temp[1]]
+# 				temp[3] = label_map[temp[3]]
+# 				temp[4] = feature_map[temp[4]]
+# 				edge_s.append(temp[0])
+# 				edge_e.append(temp[2])
+# 				if temp[2] in adj.keys():
+# 					adj[temp[2]].append(temp[0])
+# 				else:
+# 					adj[temp[2]] = [temp[0]]
+# 				if temp[0] in adj2.keys():
+# 					adj2[temp[0]].append(temp[2])
+# 				else:
+# 					adj2[temp[0]] = [temp[2]]
+# 				provenance.append(temp)
+# 			f.close()
+# 		fw.close()
+# 		fw2.close()
+# 		x_list = []
+# 		y_list = []
+# 		train_mask = []
+# 		test_mask = []
+# 		for i in range(node_cnt):
+# 			temp_list = []
+# 			for j in range(feature_num*2):
+# 				temp_list.append(0)
+# 			x_list.append(temp_list)
+# 			y_list.append(0)
+# 			train_mask.append(True)
+# 			test_mask.append(True)
 
-		for temp in provenance:
-			srcId = temp[0]
-			srcType = temp[1]
-			dstId = temp[2]
-			dstType = temp[3]
-			edge = temp[4]
-			x_list[srcId][edge] += 1
-			#x_list[srcId][edge] = 1 # modify feature on boolean instead of count
-			y_list[srcId] = srcType
-			x_list[dstId][edge+feature_num] += 1
-			#x_list[dstId][edge+feature_num] = 1 # modify feature on boolean instead of count
-			y_list[dstId] = dstType
+# 		for temp in provenance:
+# 			srcId = temp[0]
+# 			srcType = temp[1]
+# 			dstId = temp[2]
+# 			dstType = temp[3]
+# 			edge = temp[4]
+# 			x_list[srcId][edge] += 1
+# 			#x_list[srcId][edge] = 1 # modify feature on boolean instead of count
+# 			y_list[srcId] = srcType
+# 			x_list[dstId][edge+feature_num] += 1
+# 			#x_list[dstId][edge+feature_num] = 1 # modify feature on boolean instead of count
+# 			y_list[dstId] = dstType
 
-		x = torch.tensor(x_list, dtype=torch.float)	
-		y = torch.tensor(y_list, dtype=torch.long)
-		train_mask = torch.tensor(train_mask, dtype=torch.bool)
-		test_mask = torch.tensor(test_mask, dtype=torch.bool)
-		edge_index = torch.tensor([edge_s, edge_e], dtype=torch.long)
-		#data1 = Data(x=x, y=y,edge_index=edge_index, train_mask=train_mask, test_mask = test_mask)
-		feature_num *= 2
-		data1 = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask, test_mask=test_mask)
-		#self.data, self.slices = self.collate([data])
+# 		x = torch.tensor(x_list, dtype=torch.float)	
+# 		y = torch.tensor(y_list, dtype=torch.long)
+# 		train_mask = torch.tensor(train_mask, dtype=torch.bool)
+# 		test_mask = torch.tensor(test_mask, dtype=torch.bool)
+# 		edge_index = torch.tensor([edge_s, edge_e], dtype=torch.long)
+# 		#data1 = Data(x=x, y=y,edge_index=edge_index, train_mask=train_mask, test_mask = test_mask)
+# 		feature_num *= 2
+# 		data1 = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask, test_mask=test_mask)
+# 		#self.data, self.slices = self.collate([data])
 		
-		return [data1], adj, adj2
+# 		return [data1], adj, adj2
 
-def create_tt_orig_data_test():
-    tmp_data, adj, adj2 = MyDataset(test_data_path) 
-    test_dataset = ThreaTraceCadetsTest(tmp_data)
-    test_data = test_dataset[0]
-    test_data.n_id = torch.arange(test_data.num_nodes)
-    return test_data, adj, adj2
+# def create_tt_orig_data_test():
+#     tmp_data, adj, adj2 = MyDataset(test_data_path) 
+#     test_dataset = ThreaTraceCadetsTest(tmp_data)
+#     test_data = test_dataset[0]
+#     test_data.n_id = torch.arange(test_data.num_nodes)
+#     return test_data, adj, adj2
 
-def original_evaluation(adj, adj2, test_data):
+# def original_evaluation(adj, adj2, test_data):
 
-    #fw = open('/home/buchta/threaTrace/threaTrace/models/tmp/alarm.txt', 'w+')
-    fw =open(alarm_path, 'w+')
-    fw.write(str(len(test_data.test_mask))+'\n')
+#     #fw = open('/home/buchta/threaTrace/threaTrace/models/tmp/alarm.txt', 'w+')
+#     fw =open(alarm_path, 'w+')
+#     fw.write(str(len(test_data.test_mask))+'\n')
 
-    print(f"len test_data.test_mask: {len(test_data.test_mask)}")
-    print(f"Unique value count of testmask: {np.unique(test_data.test_mask, return_counts=True)}")
-    for i in tqdm(range(len(test_data.test_mask))):
-        if test_data.test_mask[i] == True: #Unzureichend klassifizierte Knoten 
-            fw.write('\n')
-            fw.write(str(i)+':')
-            ##Evaluation on Neighborhood
-            neibor = set()
-            if i in adj.keys():
-                for j in adj[i]:
-                    neibor.add(j)
-                    if not j in adj.keys(): continue
-                    for k in adj[j]:
-                        neibor.add(k)  # up to 2 hop Neighborhood source
-            if i in adj2.keys():
-                for j in adj2[i]:
-                    neibor.add(j)
-                    if not j in adj2.keys(): continue
-                    for k in adj2[j]:
-                        neibor.add(k) # up to 2 hop Neighborhood destination 
-            neibor = set(neibor)
-            for j in neibor:
-                fw.write(' '+str(j))
-    #fw.close()
+#     print(f"len test_data.test_mask: {len(test_data.test_mask)}")
+#     print(f"Unique value count of testmask: {np.unique(test_data.test_mask, return_counts=True)}")
+#     for i in tqdm(range(len(test_data.test_mask))):
+#         if test_data.test_mask[i] == True: #Unzureichend klassifizierte Knoten 
+#             fw.write('\n')
+#             fw.write(str(i)+':')
+#             ##Evaluation on Neighborhood
+#             neibor = set()
+#             if i in adj.keys():
+#                 for j in adj[i]:
+#                     neibor.add(j)
+#                     if not j in adj.keys(): continue
+#                     for k in adj[j]:
+#                         neibor.add(k)  # up to 2 hop Neighborhood source
+#             if i in adj2.keys():
+#                 for j in adj2[i]:
+#                     neibor.add(j)
+#                     if not j in adj2.keys(): continue
+#                     for k in adj2[j]:
+#                         neibor.add(k) # up to 2 hop Neighborhood destination 
+#             neibor = set(neibor)
+#             for j in neibor:
+#                 fw.write(' '+str(j))
+#     #fw.close()
 
-    print('Finish testing graph')
+#     print('Finish testing graph')
 
-    f_gt = open(ground_truth_path, 'r')
-    f_alarm = open(alarm_path, 'r')
-    eps = 1e-10
+#     f_gt = open(ground_truth_path, 'r')
+#     f_alarm = open(alarm_path, 'r')
+#     eps = 1e-10
 
-    gt = {}
-    for line in f_gt:
-        gt[int(line.strip('\n').split(' ')[0])] = 1
-    ans = []
+#     gt = {}
+#     for line in f_gt:
+#         gt[int(line.strip('\n').split(' ')[0])] = 1
+#     ans = []
 
-    for line in f_alarm: # run over all alarms (wrongly classified nodes )
-        if line == '\n': continue
-        if not ':' in line: # only first wirting = len of nodes 
-            print("no : in line")
-            print(line)
-            tot_node = int(line.strip('\n'))
-            for i in range(tot_node):
-                ans.append('tn')  # Placeholder, every node is True Negativ
-            for i in gt:
-                ans[i] = 'fn'     # Every Node which is in Ground_Truth is in first Place False Negative
-            continue
-        # Now fill List with real values 
-        line = line.strip('\n')
-        a = int(line.split(':')[0]) #wrongly classified node 
-        b = line.split(':')[1].strip(' ').split(' ') # neighborhood of wrongly classified node 
-        flag = 0
-        for i in b:
-            if i == '': continue
-            if int(i) in gt.keys(): #indirecte Treffer über die Nachbarschaft 
-                ans[int(i)] = 'tp'
-                flag = 1   #wenn nachbarschaft auch merkwürdig ist dann flag = 1 
-        if a in gt.keys(): #direkte Treffer auf knoten direkt 
-            ans[a] = 'tp'
-        else: # orig code
-            if flag == 0: # wenn nachbarschaft nicht merkwürdig ist dann ist es ein Falsch positiver 
-                ans[a] = 'fp'
+#     for line in f_alarm: # run over all alarms (wrongly classified nodes )
+#         if line == '\n': continue
+#         if not ':' in line: # only first wirting = len of nodes 
+#             print("no : in line")
+#             print(line)
+#             tot_node = int(line.strip('\n'))
+#             for i in range(tot_node):
+#                 ans.append('tn')  # Placeholder, every node is True Negativ
+#             for i in gt:
+#                 ans[i] = 'fn'     # Every Node which is in Ground_Truth is in first Place False Negative
+#             continue
+#         # Now fill List with real values 
+#         line = line.strip('\n')
+#         a = int(line.split(':')[0]) #wrongly classified node 
+#         b = line.split(':')[1].strip(' ').split(' ') # neighborhood of wrongly classified node 
+#         flag = 0
+#         for i in b:
+#             if i == '': continue
+#             if int(i) in gt.keys(): #indirecte Treffer über die Nachbarschaft 
+#                 ans[int(i)] = 'tp'
+#                 flag = 1   #wenn nachbarschaft auch merkwürdig ist dann flag = 1 
+#         if a in gt.keys(): #direkte Treffer auf knoten direkt 
+#             ans[a] = 'tp'
+#         else: # orig code
+#             if flag == 0: # wenn nachbarschaft nicht merkwürdig ist dann ist es ein Falsch positiver 
+#                 ans[a] = 'fp'
 
 
-    tn = 0
-    tp = 0
-    fn = 0
-    fp = 0
-    count = 0
-    for i in ans:
-        if i == 'tp': tp += 1
-        if i == 'tn': tn += 1
-        if i == 'fp': 
-            fp += 1
-        if i == 'fn': 
-            fn += 1
-        count = count +1
-    print(count)
-    print(tp,fp,tn,fn)
-    print("TP: {tp}, FP: {fp}, TN: {tn}, FN: {fn}".format(tp = tp, fp = fp, tn = tn, fn = fn))
-    precision = tp/(tp+fp+eps)
-    recall = tp/(tp+fn+eps)
-    fscore = 2*precision*recall/(precision+recall+eps)
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
-    print('Precision: ', precision)
-    print('Recall: ', recall)
-    print('F-Score: ', fscore)
-    print("Accuracy: ", accuracy)
-    #TP: 12851, FP: 21394, TN: 322928, FN: 1 # with single model 
+#     tn = 0
+#     tp = 0
+#     fn = 0
+#     fp = 0
+#     count = 0
+#     for i in ans:
+#         if i == 'tp': tp += 1
+#         if i == 'tn': tn += 1
+#         if i == 'fp': 
+#             fp += 1
+#         if i == 'fn': 
+#             fn += 1
+#         count = count +1
+#     print(count)
+#     print(tp,fp,tn,fn)
+#     print("TP: {tp}, FP: {fp}, TN: {tn}, FN: {fn}".format(tp = tp, fp = fp, tn = tn, fn = fn))
+#     precision = tp/(tp+fp+eps)
+#     recall = tp/(tp+fn+eps)
+#     fscore = 2*precision*recall/(precision+recall+eps)
+#     accuracy = (tp + tn) / (tp + tn + fp + fn)
+#     print('Precision: ', precision)
+#     print('Recall: ', recall)
+#     print('F-Score: ', fscore)
+#     print("Accuracy: ", accuracy)
+#     #TP: 12851, FP: 21394, TN: 322928, FN: 1 # with single model 
