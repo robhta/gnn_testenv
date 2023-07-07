@@ -8,7 +8,7 @@ from benchmark.utils import *
 from benchmark.ground_truth import *
 import pandas as pd
 import torch
-from typing import List, Tuple, Dict, Union, Self, Callable, Optional, Type
+from typing import List, Tuple, Dict, Union, Callable, Optional, Type
 from torch_geometric.data import Data, InMemoryDataset
 import numpy as np
 import configparser
@@ -512,7 +512,7 @@ class MyPyGDataset(InMemoryDataset):
         Args:
             InMemoryDataset (_type_): _description_
         """
-        def __init__(self: Self, config: configparser.ConfigParser, own_timestamp_percent:int, extension: str='',  transform: Optional[Callable] = None,
+        def __init__(self, config: configparser.ConfigParser, own_timestamp_percent:int, extension: str='',  transform: Optional[Callable] = None,
                      pre_transform: Optional[Callable] = None, **kwargs,):
                 self.config = config
                 self.name = "test"
@@ -526,20 +526,20 @@ class MyPyGDataset(InMemoryDataset):
 
         
         @property
-        def raw_file_names(self: Self) -> str | List[str] | Tuple:
+        def raw_file_names(self) -> str | List[str] | Tuple:
                 return self.datasetname + '.pt'
 
         @property
-        def processed_file_names(self: Self) -> str | List[str] | Tuple:
+        def processed_file_names(self) -> str | List[str] | Tuple:
                 return self.datasetname + '.pt'
         
-        def download(self: Self):
+        def download(self):
                 pass
 
-        def transform(self: Self):
+        def transform(self):
                 pass
 
-        def process(self: Self):
+        def process(self):
                 create_threatrace_edge_list_for_both(self.config, self.own_timestamp_percent) # 4min
                 create_threatrace_edge_list(self.config, False)
                 create_threatrace_edge_list(self.config, True)

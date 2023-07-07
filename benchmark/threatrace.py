@@ -23,7 +23,7 @@ from torch_geometric.nn import SAGEConv, GATConv
 from torch_geometric.utils import add_remaining_self_loops
 from torch_geometric.utils import k_hop_subgraph
 from torch_geometric.utils import to_undirected
-from typing import Optional, Callable, List, Self, Any, Tuple
+from typing import Optional, Callable, List, Any, Tuple
 import configparser
 from torch.optim import Optimizer
 
@@ -38,13 +38,13 @@ class SAGENet(torch.nn.Module):
     Args:
         torch (_type_): _description_
     """
-    def __init__(self: Self, in_channels: int, out_channels:int, hidden_layer:int, concat: bool=False):
+    def __init__(self, in_channels: int, out_channels:int, hidden_layer:int, concat: bool=False):
         super(SAGENet, self).__init__()
         self.conv1 = SAGEConv(in_channels, hidden_layer, normalize=False, concat=concat)
         self.conv2 = SAGEConv(hidden_layer, out_channels, normalize=False, concat=concat)
         #self.lin1 = torch.nn.Linear(256, out_channels)
 
-    def forward(self: Self, x, edge_index):
+    def forward(self, x, edge_index):
         x = self.conv1(x, edge_index)
         x = F.relu(x)
         x = F.dropout(x, p=0.5, training=self.training)
@@ -56,7 +56,7 @@ class SAGENet(torch.nn.Module):
 class ThreaTracePipeline():
     # This Class represents a Class, that holds the whole Threatrace Pipeline
     # it contains all the functions and variables needed to run the pipeline
-    def __init__(self: Self, config: configparser.ConfigParser, train_data: Data, test_data: Data):
+    def __init__(self, config: configparser.ConfigParser, train_data: Data, test_data: Data):
         """_summary_
             Initializes the Threatrace Pipeline Class 
         Args:
@@ -93,7 +93,7 @@ class ThreaTracePipeline():
             os.makedirs(self.models_dir_path)
         seed_everything(1234)
 
-    def delete_old_models(self: Self):
+    def delete_old_models(self):
         """_summary_
             Deletes all old models in the models directory
             This is needed to ensure that the models are not loaded from the last run
@@ -109,7 +109,7 @@ class ThreaTracePipeline():
             if item.startswith("fp_"):
                 os.remove(os.path.join(self.models_dir_path, item))
 
-    def create_model(self: Self, data: Data) -> SAGENet:
+    def create_model(self, data: Data) -> SAGENet:
         """_summary_
             Creates a new SAGENet Model
         Args:
@@ -128,7 +128,7 @@ class ThreaTracePipeline():
         train_model = train_net(train_feature_num, train_label_num, self.hidden_layer).to(device)
         return train_model
 
-    def create_optimizer(self: Self, model: Any, learning_rate: float, weight_decay: float) -> Optimizer:
+    def create_optimizer(self, model: Any, learning_rate: float, weight_decay: float) -> Optimizer:
         """_summary_
             Creates a new Adam Optimizer
         Args:
@@ -164,7 +164,7 @@ class ThreaTracePipeline():
         loader = NeighborLoader(data, shuffle=shuffle, num_neighbors=[num_neighbor] * hop, batch_size=b_size,input_nodes=input_nodes)
         return loader
 
-    def train(self: Self) -> float:
+    def train(self) -> float:
         """_summary_
             Trains the model for one epoch
         Args:
@@ -187,7 +187,7 @@ class ThreaTracePipeline():
             items += data_flow.batch_size
         return total_loss / items
 
-    def test(self: Self, model: Any, loader: NeighborLoader) -> float:
+    def test(self, model: Any, loader: NeighborLoader) -> float:
         """_summary_
             Tests the model for one epoch
         Args:
@@ -213,7 +213,7 @@ class ThreaTracePipeline():
             items += data_flow.batch_size
         return correct / items
 
-    def final_test(self: Self, model: Any, loader: NeighborLoader, data: Data, false_classified: int, true_classified: int) -> Tuple[float, int, int]:
+    def final_test(self, model: Any, loader: NeighborLoader, data: Data, false_classified: int, true_classified: int) -> Tuple[float, int, int]:
         """_summary_
             Tests the model and returns the false and true classified nodes
             The false and true classified nodes are used to create the new training data for the next submodel
@@ -267,7 +267,7 @@ class ThreaTracePipeline():
             #print(f"Unique Count of pred: {pred.unique(return_counts=True)}")
         return correct / items, false_classified, true_classified
     
-    def show(self: Self, *s):
+    def show(self, *s):
         """_summary_
             Prints the given parameters
             *s is used to print multiple parameters
@@ -279,7 +279,7 @@ class ThreaTracePipeline():
             print (str(s[i]) + ' ', end = '')
         print (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
 
-    def pretraining(self: Self):
+    def pretraining(self):
         """_summary_
             Trains the first model on all data for init_epochs
         Args:
@@ -295,7 +295,7 @@ class ThreaTracePipeline():
 
             self.show(epoch, loss, acc)
     
-    def multi_model_training(self: Self):
+    def multi_model_training(self):
         """_summary_
             Trains the submodels on the data
             The submodels are trained until the accuracy is 1 or the loss is below 1, or the submodel_max_epochs is reached
@@ -380,7 +380,7 @@ class ThreaTracePipeline():
             if acc == 1: break 
     show('Finish training graph')
 
-    def test_model_performance(self: Self, max_runs: int=100):
+    def test_model_performance(self, max_runs: int=100):
         # todo: this loop has to be optimized, it still based on the original code
         """_summary_
             Tests the model performance on the test data
@@ -416,7 +416,7 @@ class ThreaTracePipeline():
         print(f"Unique Count of pred: {self.test_data.test_mask.unique(return_counts=True)}")
             # 51 vs 57 features problems
 
-    def get_detection_insights(self: Self) -> torch.Tensor:
+    def get_detection_insights(self) -> torch.Tensor:
         """
         _summary_
             Returns the detection insights
@@ -433,7 +433,7 @@ class ThreaTracePipeline():
         print(f"Unique Count of filtered_tensor: {filtered_tensor.unique(return_counts=True)}")
         return filtered_tensor
 
-    def evaluation(self: Self, gt: List[int]):
+    def evaluation(self, gt: List[int]):
         """_summary_
             Evaluates the model performance on the test data
             The evaluation is done by comparing the test_data.test_mask with the ground truth
@@ -559,7 +559,7 @@ class ThreaTracePipeline():
         #TP: 4568, FP: 0, TN: 549883, FN: 19887
 
 
-    def evaluation_single_hop(self: Self, gt: List[int]):
+    def evaluation_single_hop(self, gt: List[int]):
         """_summary_
             Evaluates the model performance on the test data
             Same as evaluation but only one hop is used

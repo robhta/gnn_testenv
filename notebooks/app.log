@@ -1300,3 +1300,139 @@
 2023-07-07 09:34:48,519 - INFO - Establishing connection
 2023-07-07 09:34:48,526 - INFO - Connection established
 2023-07-07 09:34:53,543 - INFO - mapped_atk_nodes: 25049
+2023-07-07 10:06:04,738 - INFO - This will get logged to a file
+2023-07-07 10:25:29,840 - INFO - This will get logged to a file
+2023-07-07 10:25:30,688 - INFO - Files exists. Skipping function.
+2023-07-07 10:25:31,159 - INFO - Establishing connection
+2023-07-07 10:25:31,236 - INFO - Connection established
+2023-07-07 10:25:31,239 - INFO - Table exists. Skipping function.
+2023-07-07 10:26:27,280 - INFO - create_threatrace_edge_list_for_both
+2023-07-07 10:26:27,280 - INFO - create_threatrace_node_type:
+2023-07-07 10:26:27,280 - INFO - Establishing connection
+2023-07-07 10:26:27,300 - INFO - Connection established
+2023-07-07 10:26:27,320 - ERROR - Error executing query: 1060 (42S21): Duplicate column name 'subtypes'
+2023-07-07 10:26:27,321 - INFO - Establishing connection
+2023-07-07 10:26:27,333 - INFO - Connection established
+2023-07-07 10:26:27,340 - ERROR - Error executing query: 1060 (42S21): Duplicate column name 'whole_type'
+2023-07-07 10:26:27,340 - INFO - Establishing connection
+2023-07-07 10:26:27,348 - INFO - Connection established
+2023-07-07 10:26:32,044 - INFO - Establishing connection
+2023-07-07 10:26:32,051 - INFO - Connection established
+2023-07-07 10:26:35,914 - INFO - create_threatrace_node_type: done
+2023-07-07 10:26:35,915 - INFO - Establishing connection
+2023-07-07 10:26:35,921 - INFO - Connection established
+2023-07-07 10:27:46,260 - INFO - Establishing connection
+2023-07-07 10:27:46,286 - INFO - Connection established
+2023-07-07 10:28:27,433 - INFO - read_gt_yaml:
+2023-07-07 10:28:27,458 - INFO - Parsing DARPA GT to UNIX NS
+2023-07-07 10:28:27,458 - INFO - Parsing DARPA Hour Min Timestamp String
+2023-07-07 10:28:27,458 - INFO - Parsing Timestamp String
+2023-07-07 10:28:27,461 - INFO - Parsing EST
+2023-07-07 10:28:27,461 - INFO - Converting datetime to DARPA UNIX
+2023-07-07 10:28:27,461 - INFO - Timestamp: 2018-04-12 19:58:00
+2023-07-07 10:28:27,462 - INFO - Parsed DARPA GT date: 20180412 and time: 14:00 to UNIX NS: 1.52355588e+18
+2023-07-07 10:28:27,462 - INFO - Parsing DARPA GT to UNIX NS
+2023-07-07 10:28:27,462 - INFO - Parsing DARPA Hour Min Timestamp String
+2023-07-07 10:28:27,462 - INFO - Parsing Timestamp String
+2023-07-07 10:28:27,462 - INFO - Parsing EST
+2023-07-07 10:28:27,462 - INFO - Converting datetime to DARPA UNIX
+2023-07-07 10:28:27,462 - INFO - Timestamp: 2018-04-12 20:40:00
+2023-07-07 10:28:27,462 - INFO - Parsed DARPA GT date: 20180412 and time: 14:38 to UNIX NS: 1.5235584e+18
+2023-07-07 10:28:27,462 - INFO - Establishing connection
+2023-07-07 10:28:27,477 - INFO - Connection established
+2023-07-07 10:28:34,437 - INFO - Establishing connection
+2023-07-07 10:28:34,448 - INFO - Connection established
+2023-07-07 10:28:46,195 - INFO - create_threatrace_edge_list
+2023-07-07 10:28:46,196 - INFO - rearrange_nodes
+2023-07-07 10:28:46,196 - INFO - Establishing connection
+2023-07-07 10:28:46,204 - INFO - Connection established
+2023-07-07 10:28:57,747 - INFO - Establishing connection
+2023-07-07 10:28:57,755 - INFO - Connection established
+2023-07-07 10:28:58,539 - INFO - Establishing connection
+2023-07-07 10:28:58,546 - INFO - Connection established
+2023-07-07 10:28:58,592 - INFO - Establishing connection
+2023-07-07 10:28:58,599 - INFO - Connection established
+2023-07-07 10:28:58,660 - INFO - Establishing connection
+2023-07-07 10:28:58,665 - INFO - Connection established
+2023-07-07 10:29:08,647 - INFO - Establishing connection
+2023-07-07 10:29:08,656 - INFO - Connection established
+2023-07-07 10:29:08,662 - INFO - Establishing connection
+2023-07-07 10:29:08,670 - INFO - Connection established
+2023-07-07 10:29:08,851 - INFO - Establishing connection
+2023-07-07 10:29:08,858 - INFO - Connection established
+2023-07-07 10:29:08,867 - INFO - Establishing connection
+2023-07-07 10:29:08,874 - INFO - Connection established
+2023-07-07 10:29:10,088 - INFO - Establishing connection
+2023-07-07 10:29:10,097 - INFO - Connection established
+2023-07-07 10:29:12,323 - INFO - Establishing connection
+2023-07-07 10:29:12,331 - INFO - Connection established
+2023-07-07 10:29:15,142 - INFO - Establishing connection
+2023-07-07 10:29:15,155 - INFO - Connection established
+2023-07-07 10:29:17,958 - INFO - create_threatrace_edge_list
+2023-07-07 10:29:17,958 - INFO - rearrange_nodes
+2023-07-07 10:29:17,958 - INFO - Establishing connection
+2023-07-07 10:29:17,968 - INFO - Connection established
+2023-07-07 10:30:20,775 - INFO - Establishing connection
+2023-07-07 10:30:20,789 - INFO - Connection established
+2023-07-07 10:30:21,847 - INFO - Establishing connection
+2023-07-07 10:30:21,861 - INFO - Connection established
+2023-07-07 10:30:22,122 - INFO - Establishing connection
+2023-07-07 10:30:22,129 - INFO - Connection established
+2023-07-07 10:30:22,345 - INFO - Establishing connection
+2023-07-07 10:30:22,351 - INFO - Connection established
+2023-07-07 10:31:04,962 - INFO - Establishing connection
+2023-07-07 10:31:05,004 - INFO - Connection established
+2023-07-07 10:31:05,016 - INFO - Establishing connection
+2023-07-07 10:31:05,022 - INFO - Connection established
+2023-07-07 10:31:05,701 - INFO - Establishing connection
+2023-07-07 10:31:05,715 - INFO - Connection established
+2023-07-07 10:31:05,799 - INFO - Establishing connection
+2023-07-07 10:31:05,804 - INFO - Connection established
+2023-07-07 10:31:09,979 - INFO - Establishing connection
+2023-07-07 10:31:09,990 - INFO - Connection established
+2023-07-07 10:31:20,647 - INFO - Establishing connection
+2023-07-07 10:31:20,657 - INFO - Connection established
+2023-07-07 10:31:31,816 - INFO - Establishing connection
+2023-07-07 10:31:31,831 - INFO - Connection established
+2023-07-07 10:31:45,381 - INFO - Establishing connection
+2023-07-07 10:31:45,388 - INFO - Connection established
+2023-07-07 10:31:45,613 - INFO - Establishing connection
+2023-07-07 10:31:45,619 - INFO - Connection established
+2023-07-07 10:31:45,758 - INFO - Establishing connection
+2023-07-07 10:31:45,766 - INFO - Connection established
+2023-07-07 10:32:50,483 - INFO - Establishing connection
+2023-07-07 10:32:50,512 - INFO - Connection established
+2023-07-07 10:33:37,785 - INFO - Establishing connection
+2023-07-07 10:33:37,820 - INFO - Connection established
+2023-07-07 10:33:38,477 - INFO - Value: 0, Count:, 133448
+2023-07-07 10:33:38,477 - INFO - Value: 1, Count:, 43080
+2023-07-07 10:33:38,477 - INFO - Value: 2, Count:, 374521
+2023-07-07 10:33:38,477 - INFO - Value: 3, Count:, 12657
+2023-07-07 10:33:38,477 - INFO - Value: 4, Count:, 10510
+2023-07-07 10:33:38,477 - INFO - Value: 5, Count:, 122
+2023-07-07 10:33:38,486 - INFO - Establishing connection
+2023-07-07 10:33:38,492 - INFO - Connection established
+2023-07-07 10:33:50,939 - INFO - Establishing connection
+2023-07-07 10:33:50,973 - INFO - Connection established
+2023-07-07 10:34:03,251 - INFO - Length:, 7375768
+2023-07-07 10:34:04,841 - INFO - Establishing connection
+2023-07-07 10:34:04,871 - INFO - Connection established
+2023-07-07 10:34:04,945 - INFO - Establishing connection
+2023-07-07 10:34:04,951 - INFO - Connection established
+2023-07-07 10:34:04,993 - INFO - Establishing connection
+2023-07-07 10:34:04,999 - INFO - Connection established
+2023-07-07 10:34:19,097 - INFO - Establishing connection
+2023-07-07 10:34:19,118 - INFO - Connection established
+2023-07-07 10:34:31,004 - INFO - Establishing connection
+2023-07-07 10:34:31,020 - INFO - Connection established
+2023-07-07 10:34:31,149 - INFO - Value: 0, Count:, 67717
+2023-07-07 10:34:31,149 - INFO - Value: 1, Count:, 8533
+2023-07-07 10:34:31,149 - INFO - Value: 2, Count:, 74229
+2023-07-07 10:34:31,149 - INFO - Value: 3, Count:, 2403
+2023-07-07 10:34:31,149 - INFO - Value: 4, Count:, 2039
+2023-07-07 10:34:31,149 - INFO - Value: 5, Count:, 39
+2023-07-07 10:34:31,151 - INFO - Establishing connection
+2023-07-07 10:34:31,157 - INFO - Connection established
+2023-07-07 10:34:34,135 - INFO - Establishing connection
+2023-07-07 10:34:34,142 - INFO - Connection established
+2023-07-07 10:34:36,930 - INFO - Length:, 1738773
