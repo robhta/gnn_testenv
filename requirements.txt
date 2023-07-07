@@ -1,0 +1,8 @@
+torch 
+torchvision 
+torchaudio
+torch_geometric
+mysql-connector-python
+pandas
+numpy
+pyyaml
