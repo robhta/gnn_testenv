@@ -1,6 +1,11 @@
 # gnn_testenv
 Graph Neural Network Test Environment for Anomaly Detection in Provenance Graph Data 
 
+## 0. Download the data
+https://github.com/darpa-i2o/Transparent-Computing/blob/master/README-E3.md 
+https://drive.google.com/drive/folders/179uDuz62Aw61Ehft6MoJCpPeBEz16VFy 
+For the example_run.ipynb the data  Engegement3/data/cadets/ta1-cadets-e3-official-2.json.tar.gz is needed.
+
 ## 1. Install Docker 
 https://docs.docker.com/engine/install/ 
 
