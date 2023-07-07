@@ -118,9 +118,9 @@ class ThreaTracePipeline():
         Returns:
             SAGENet: The created SAGENet Model
         """
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # -> at the moment we use cpu
 
-        #device = torch.device('cpu')
+        device = torch.device('cpu')
         #train_net = SAGENet
         train_net = SAGENet 
         train_feature_num = data.x.shape[1]
