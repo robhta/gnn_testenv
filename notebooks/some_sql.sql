@@ -143,3 +143,6 @@ SELECT * FROM cadets_r03_tt_edges_train LIMIT 10;
 
 SELECT num as id, node_type as label from cadets_r03_tt_nodes_train LIMIT 10;
 
+
+SELECT * FROM cadets_edges_01_record LIMIT 10;
+

@@ -56,7 +56,7 @@ class SAGENet(torch.nn.Module):
 class ThreaTracePipeline():
     # This Class represents a Class, that holds the whole Threatrace Pipeline
     # it contains all the functions and variables needed to run the pipeline
-    def __init__(self, config: configparser.ConfigParser, train_data: Data, test_data: Data):
+    def __init__(self, train_data: Data, test_data: Data, config: configparser.ConfigParser = None):
         """_summary_
             Initializes the Threatrace Pipeline Class 
         Args:
@@ -67,21 +67,26 @@ class ThreaTracePipeline():
         self.config = config
         self.train_data = train_data
         self.test_data = test_data
+        self.train_data.n_id = torch.arange(train_data.num_nodes)
+        self.test_data.n_id = torch.arange(test_data.num_nodes)
         self.train_thre = 1.5
         self.test_thre = 2.0
-        self.num_neighbor = -1
+        self.num_neighbor = -1 #100 # -1
         self.shuffle = False
         self.hop = 2
         self.b_train_size = train_data.x.shape[0]
         self.b_test_size = test_data.x.shape[0]
         self.false_classified = []
         self.true_classified = []
-        self.init_epochs = 30
-        self.submodel_max_epochs = 150
+        self.init_epochs = 30# 10 # 30
+        self.submodel_max_epochs = 150 #20 # 150
         self.test_cnt_thre = 3
-        self.models_dir_path = self.config["Directories"]["models"]
+        if self.config is not None:
+            self.models_dir_path = self.config["Directories"]["models"]
+        else:
+            self.models_dir_path = "./models/"
         self.loop_num = 0
-        self.hidden_layer = 32
+        self.hidden_layer = 32 #64 # 32
         self.train_model = self.create_model(self.train_data)
         self.test_model = self.create_model(self.test_data)
         self.optimizer = self.create_optimizer(self.train_model, learning_rate=0.001, weight_decay=5e-4)
@@ -433,7 +438,7 @@ class ThreaTracePipeline():
         print(f"Unique Count of filtered_tensor: {filtered_tensor.unique(return_counts=True)}")
         return filtered_tensor
 
-    def evaluation(self, gt: List[int]):
+    def evaluation(self, gt: List[int], hits=None,num_hops=2):
         """_summary_
             Evaluates the model performance on the test data
             The evaluation is done by comparing the test_data.test_mask with the ground truth
@@ -456,6 +461,8 @@ class ThreaTracePipeline():
         Args:
             self (Self): _description_
             gt (_type_): _description_
+            hits (_type_, optional): _description_. Defaults to None.
+                Should be a list of all nodes that are malicious.
 
         Returns:
             _type_: _description_
@@ -482,14 +489,16 @@ class ThreaTracePipeline():
         print("gt")
         unique_values, counts = np.unique(ans, return_counts=True)
         print(dict(zip(unique_values, counts)))
-
-        hits = self.test_data.test_mask
+        if hits is None:
+            hits = self.test_data.test_mask
+        else:
+            hits = hits
         hit_indexes = torch.nonzero(hits).squeeze().tolist()
         intersection_counter = 0 
         for element in tqdm(hit_indexes, total=len(hit_indexes)):
             if element:
                 i_as_list = [element]
-                hit_neighbors, edge_index, mapping, edge_mask = k_hop_subgraph(i_as_list, num_hops=2, edge_index=self.test_data_undirected_edge_index) # get neighbors of hit node
+                hit_neighbors, edge_index, mapping, edge_mask = k_hop_subgraph(i_as_list, num_hops=num_hops, edge_index=self.test_data_undirected_edge_index) # get neighbors of hit node
                 intersection = list(set(gt) & set(hit_neighbors.tolist())) #-> performanze boost! 
                 if intersection != []:
                     intersection_counter += 1
@@ -559,7 +568,7 @@ class ThreaTracePipeline():
         #TP: 4568, FP: 0, TN: 549883, FN: 19887
 
 
-    def evaluation_single_hop(self, gt: List[int]):
+    def evaluation_no_hop(self, gt: List[int], hits=None):
         """_summary_
             Evaluates the model performance on the test data
             Same as evaluation but only one hop is used
@@ -586,10 +595,15 @@ class ThreaTracePipeline():
         unique_values, counts = np.unique(ans, return_counts=True)
         print(dict(zip(unique_values, counts)))
 
-        hits = self.test_data.test_mask
+        if hits is None:
+            hits = self.test_data.test_mask
+        else:
+            hits = hits
         hit_indexes = torch.nonzero(hits).squeeze().tolist()
         for index, element in tqdm(enumerate(hit_indexes), total=len(hit_indexes)):
             if element:
+                # print("--")
+                # print(element)
                 # i_as_list = [index]
                 # hit_neighbors, edge_index, mapping, edge_mask = k_hop_subgraph(i_as_list, num_hops=2, edge_index=self.test_data.edge_index, flow="target_to_source") # get neighbors of hit node
                 # intersection = list(set(gt) & set(hit_neighbors.tolist())) #-> performanze boost! 

@@ -264,6 +264,14 @@ def add_node_label_mapping(config: configparser.ConfigParser, test_bool: bool=Fa
         alter_query = f"ALTER TABLE {nodes} ADD COLUMN {mapped_column} INT"
         execute_query_and_commit(config, alter_query)
 
+        # Save Mapping to file  
+        logging.info(f'Found {len(mapping)} labels') 
+        output_dir = config['Directories']['output']
+        mapping_file = output_dir + 'label_mapping.csv'
+        with open(mapping_file, 'w') as f:
+                for key, value in mapping.items():
+                        f.write(f"{key} {value}\n")
+
         # Update the table with the mapped values
         update_query = f"UPDATE {nodes} SET {mapped_column} = CASE "
         for value, mapped_value in mapping.items():

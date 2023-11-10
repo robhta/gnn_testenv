@@ -4,8 +4,12 @@ benchmark_lite_sql.egg-info/
 benchmark/__pycache__/
 .vscode/
 oldstuff/
-
+notebooks/models/*
+notebooks/cadets_edges_01_record_table_statistics/*
+notebooks/app.log
+notebooks/CICIDS.ipynb
 # General
 .DS_Store
 .AppleDouble
 .LSOverride
+*.txt
